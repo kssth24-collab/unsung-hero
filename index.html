@@ -1,0 +1,94 @@
+HTML
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 우리 반 이달의 언성 히어로</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #2980b9; }
+        .board { margin-top: 30px; display: grid; gap: 15px; }
+        .card { background: #fff9c4; padding: 15px; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); position: relative; }
+        .card-header { font-weight: bold; color: #d35400; margin-bottom: 5px; }
+        .card-tag { display: inline-block; background: #e67e22; color: white; font-size: 12px; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; }
+        .like-btn { background: none; border: 1px solid #e74c3c; color: #e74c3c; width: auto; padding: 4px 8px; font-size: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 이달의 언성 히어로</h1>
+        <p style="text-align:center; color:#666;">보이지 않는 곳에서 학급을 위해 애쓴 친구를 칭찬해 주세요!</p>
+        
+        <div class="form-group">
+            <label>칭찬할 친구 이름</label>
+            <input type="text" id="target" placeholder="예: 홍길동">
+        </div>
+        <div class="form-group">
+            <label>공동체 역량 요소</label>
+            <select id="tag">
+                <option value="🤝 배려와 양보">🤝 배려와 양보</option>
+                <option value="🧹 솔선수범/책임감">🧹 솔선수범/책임감</option>
+                <option value="🗣️ 소통과 공감">🗣️ 소통과 공감</option>
+                <option value="💡 문제 해결">💡 문제 해결</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>칭찬 내용 (구체적 에피소드)</label>
+            <textarea id="content" rows="3" placeholder="어떤 일이 있었는지 적어주세요."></textarea>
+        </div>
+        <button onclick="addCard()">카드 등록하기</button>
+
+        <div class="board" id="board"></div>
+    </div>
+
+    <script>
+        function loadCards() {
+            const cards = JSON.parse(localStorage.getItem('heroCards') || '[]');
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            cards.forEach((card, index) => {
+                board.innerHTML += `
+                    <div class="card">
+                        <span class="card-tag">${card.tag}</span>
+                        <div class="card-header">칭찬 대상: ${card.target}</div>
+                        <div>${card.content}</div>
+                        <button class="like-btn" onclick="likeCard(${index})">❤️ 좋아요 ${card.likes || 0}</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addCard() {
+            const target = document.getElementById('target').value;
+            const tag = document.getElementById('tag').value;
+            const content = document.getElementById('content').value;
+
+            if(!target || !content) { alert('이름과 내용을 입력해주세요!'); return; }
+
+            const cards = JSON.parse(localStorage.getItem('heroCards') || '[]');
+            cards.unshift({ target, tag, content, likes: 0 });
+            localStorage.setItem('heroCards', JSON.stringify(cards));
+
+            document.getElementById('target').value = '';
+            document.getElementById('content').value = '';
+            loadCards();
+        }
+
+        function likeCard(index) {
+            const cards = JSON.parse(localStorage.getItem('heroCards') || '[]');
+            cards[index].likes = (cards[index].likes || 0) + 1;
+            localStorage.setItem('heroCards', JSON.stringify(cards));
+            loadCards();
+        }
+
+        loadCards();
+    </script>
+</body>
+</html>
